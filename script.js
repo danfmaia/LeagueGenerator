@@ -213,7 +213,7 @@
 		const text = input.val();
 		if (text.length === 0) {
             console.log("Input was empty!");
-            message.text("Lista vazia!");
+            message.text("Lista vazia! Preencha o campo acima seguindo o formato do exemplo.");
             message.attr('class', 'error');
 			return;
 		}
