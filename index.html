@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8">
+	<title>Gerador de Campeonato</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<h1 id="title">Gerador de Campeonato</h1>
+	<div>
+        <textarea
+            id="input-textarea"
+            rows="15"
+            cols="40"
+            placeholder=
+"// Exemplo:
+Vasco;Rio de Janeiro
+Flamengo;Rio de Janeiro
+Corinthians;São Paulo
+Grêmio;Rio Grande do Sul
+Cruzeiro;Minas Gerais
+Palmeiras;São Paulo
+..."
+        ></textarea>
+        <button id="import-button">Gerar Campeonato</button>
+    </div>
+    
+    <textarea id="turn-textarea" rows="30" cols="45" readonly></textarea>
+    <textarea id="return-textarea" rows="30" cols="45" readonly></textarea>
+	<textarea id="ranking-textarea" rows="15" cols="30" readonly></textarea>
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<script src="script.js"></script>
+</body>
+</html>
