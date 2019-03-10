@@ -1,51 +1,47 @@
 (function($) {
 	"use scrict";
 
-	const input = $("#input-textarea");
-    const turn_ = $("#turn-textarea");
-    const return_ = $("#return-textarea");
-	const ranking = $("#ranking-textarea");
+	const input = $( "#input-textarea" );
+    const turn_ = $( "#turn-textarea" );
+    const return_ = $( "#return-textarea" );
+    const ranking = $( "#ranking-textarea" );
+    const message = $( "#message" );
     let teams = [];
     let cities = {};
     let scores = {};
 
-	/*
-		Parses the input into the teams array
-		as an array of [teamName, teamCity] pairs.
-
-		Returns null in case of a parsing error.
+	/*  Parses the input into an array of teams and into key value pairs of
+        cities and scores.
+        
+        Returns null in case of a parsing error.
 	*/
-	function parseInput(input_text) {
+	function parseInput( input_text ){
         teams = [];
         scores = {};
         cities = {};
         
-		const rows = input_text.split("\n");
+		const rows = input_text.split( "\n" );
 
-        if (rows.length < 2) {
-            console.log("passed 1");
+        if( rows.length < 2 ){
             return null;
         }
         
-		for (let i = 0; i < rows.length; i++) {
-			const columns = rows[i].split(";");
+		for( let i = 0; i < rows.length; i++ ){
+			const columns = rows[i].split( ";" );
 
-			if (columns.length !== 2) {
-                console.log("passed 2");
+			if( columns.length !== 2 ){
                 return null;
             }
 
-            teams.push(columns[0]);
-
-			const teamName = columns[0];
+            const teamName = $.trim( columns[0] );
+            teams.push( teamName );
 
 			// Can't have duplicate teams!
-			if (teamName in cities) {
-                console.log("passed " + i);
+			if( teamName in cities ){
                 return null;
             }
 
-            cities[teamName] = columns[1];
+            cities[teamName] = $.trim( columns[1] );
 			scores[teamName] = 0;
         }
         
@@ -53,25 +49,10 @@
 
         return true;
 	}
-
-	function permute(array) {
-		const result = [];
-
-		for (let i = 0; i < array.length - 1; i++) {
-			// Home team.
-			const first = array[i];
-
-			for (let j = i + 1; j < array.length; j++) {
-				// Visitor team.
-				const second = array[j];
-
-				result.push( [first,second] );
-			}
-		}
-
-		return result;
-    }
     
+    /*  Permutes elements in an array to form pairs using the circle method to suit
+        the round-robin tournament format.
+    */
     function permute_circleMethod( array ){
         const result = []
         let N = array.length;
@@ -83,12 +64,12 @@
             let round = [];
 
             lastIsHome = ! lastIsHome;
-            if (lastIsHome) {
+            if( lastIsHome ){
                 round.push( [array[N-1],array[i]] );
-                console.log((N-1) + " " + i);
+                console.log( (N-1) + " " + i );
             } else {
                 round.push( [array[i],array[N-1]] );
-                console.log(i + " " + (N-1));
+                console.log( i + " " + (N-1) );
             }
 
             let flag = true;
@@ -109,7 +90,7 @@
                     a = c;
                 }
                 
-                console.log(a + " " + b);
+                console.log( a + " " + b );
 
                 round.push( [array[a],array[b]] );
             }
@@ -132,7 +113,10 @@
         return result;
     }
 
-    // Fisher-Yates (aka Knuth) shuffle algorithm for JS arrays.
+    /*  Fisher-Yates (aka Knuth) shuffle algorithm for JS arrays.
+    
+        Function imported from https://github.com/Daplie/knuth-shuffle
+    */
     function shuffle(array) {
         var currentIndex = array.length, temporaryValue, randomIndex;
       
@@ -228,7 +212,9 @@
 	$("#import-button").click(function() {
 		const text = input.val();
 		if (text.length === 0) {
-			console.log("Input was empty!");
+            console.log("Input was empty!");
+            message.text("Lista vazia!");
+            message.attr('class', 'error');
 			return;
 		}
 
@@ -239,9 +225,11 @@
         console.log(scores);
 
 		if (parseResult === null) {
-			console.log("Invalid input!");
+            console.log("Invalid input!");
+            message.text("Entrada inválida!");
+            message.attr('class', 'error');
 			return;
-		}
+        }
 		
 		console.log("Permuting teams to generate matches using circle method...");
         const rounds = permute_circleMethod( teams );
@@ -261,6 +249,31 @@
 		console.log("Ranking teams...");
 		ranking.val(rank( scores ));
 		
-		console.log("Done!");
-	});
+        console.log("Done!");
+        message.text("Campeonato gerado!");
+        message.attr('class', 'success');
+    });
+    
+    /*  Permutes all elements in an array to form pairs. It was used to generate the matches
+        before the more specific function permute_circleMethod has been implemented so that matches
+        can already be generated in a correct round-robin way.
+    */
+    function permute(array) {
+		const result = [];
+
+		for (let i = 0; i < array.length - 1; i++) {
+			// Home team.
+			const first = array[i];
+
+			for (let j = i + 1; j < array.length; j++) {
+				// Visitor team.
+				const second = array[j];
+
+				result.push( [first,second] );
+			}
+		}
+
+		return result;
+    }
+
 })(jQuery);

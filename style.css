@@ -1,4 +1,27 @@
+html, body {
+    font-size: 15px;
+    font-family: "Helvetica", "Verdana", "Arial", sans-serif;
+    text-align: justify;
+    margin: 5px;   
+}
+
 textarea[readonly] {
 	color: #909090;
 	background: #f0f0f0;
+}
+
+#import-button {
+    font-size: 1.4rem;
+}
+
+#message {
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding-left: 2rem;
+}
+.success {
+    color: green;
+}
+.error {
+    color: red;
 }

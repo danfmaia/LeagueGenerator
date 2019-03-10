@@ -8,8 +8,12 @@
 <body>
 	<h1 id="title">Gerador de Campeonato</h1>
 	<div>
+        <label id="input-message" for="input-textarrea">Preencha a lista de times e suas respectivas cidades
+            usando o formato do exemplo:
+        </label><br>
         <textarea
             id="input-textarea"
+            name="input-textarea"
             rows="15"
             cols="40"
             placeholder=
@@ -17,12 +21,13 @@
 Vasco;Rio de Janeiro
 Flamengo;Rio de Janeiro
 Corinthians;São Paulo
-Grêmio;Rio Grande do Sul
-Cruzeiro;Minas Gerais
+Grêmio;Porto Alegre
+Cruzeiro;Belo Horizonte
 Palmeiras;São Paulo
 ..."
         ></textarea>
         <button id="import-button">Gerar Campeonato</button>
+        <p id="message"></p>
     </div>
     
     <textarea id="turn-textarea" rows="30" cols="45" readonly></textarea>
