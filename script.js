@@ -68,10 +68,10 @@
                 lastIsHome = ! lastIsHome;
                 if( lastIsHome ){
                     round.push( [array[N-1],array[i]] );
-                    console.log( (N-1) + " " + i );
+                    // console.log( (N-1) + " " + i );
                 } else {
                     round.push( [array[i],array[N-1]] );
-                    console.log( i + " " + (N-1) );
+                    // console.log( i + " " + (N-1) );
                 }
             }
 
@@ -93,16 +93,14 @@
                     a = c;
                 }
                 
-                console.log( a + " " + b );
+                // console.log( a + " " + b );
 
                 round.push( [array[a],array[b]] );
             }
-            console.log("");
+            // console.log("");
             
             result.push( round );
         }
-        console.log("RESULT:");
-        console.log(result);
         return result;
     }
 
@@ -195,7 +193,7 @@
     // Formats tournament output while simulating matches' outcomes.
 	function formatOutput( matches, turn ) {
         const result = [];
-
+        
         for( let i = 0; i < matches[turn].length; i++ ){
             if( turn === 0 )
                 result.push(`Rodada ${i+1}:`);
@@ -203,11 +201,10 @@
                 result.push(`Rodada ${teams.length+i}:`);
             else
                 result.push("ERRO");
-
-            let j = 0;
+            
             for( const match of matches[turn][i] ){
                 let roundText = "";
-                if( matchFactors[turn][j][cities[match[0]]] === 1 ){
+                if( matchFactors[turn][i][cities[match[0]]] === 1 ){
                     roundText = " (RODADA DUPLA)"
                 }
                 result.push(`  ${match[0]} x ${match[1]} - ${cities[match[0]]}${roundText}`);
@@ -229,7 +226,6 @@
                     default:
                         result.push("ERRO");
                 }
-                j += 1;
             }
 
             result.push("");
