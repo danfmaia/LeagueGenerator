@@ -9,6 +9,7 @@
     let teams = [];
     let cities = {};
     let scores = {};
+    let matchFactors = [];
 
 	/*  Parses the input into an array of teams and into key value pairs of
         cities and scores.
@@ -44,6 +45,10 @@
             cities[teamName] = $.trim( columns[1] );
 			scores[teamName] = 0;
         }
+
+        if( "dummy" in teams ){
+            return null;
+        }
         
         shuffle( teams );
 
@@ -58,18 +63,20 @@
         let N = array.length;
         let n = array.length - 1;
         let lastIsHome = false;
-        
+
         // i is round index.
         for( let i = 0; i < N-1; i++ ){
             let round = [];
-
-            lastIsHome = ! lastIsHome;
-            if( lastIsHome ){
-                round.push( [array[N-1],array[i]] );
-                console.log( (N-1) + " " + i );
-            } else {
-                round.push( [array[i],array[N-1]] );
-                console.log( i + " " + (N-1) );
+            
+            if( N%2 === 0 ){
+                lastIsHome = ! lastIsHome;
+                if( lastIsHome ){
+                    round.push( [array[N-1],array[i]] );
+                    console.log( (N-1) + " " + i );
+                } else {
+                    round.push( [array[i],array[N-1]] );
+                    console.log( i + " " + (N-1) );
+                }
             }
 
             let flag = true;
@@ -98,8 +105,29 @@
             
             result.push( round );
         }
-
+        console.log("RESULT:");
+        console.log(result);
         return result;
+    }
+
+    // For double round checking.
+    function getMatchFactors( rounds ){
+        matchFactors = [];
+
+        for( turn=0; turn<=1; turn++ ){
+            let matchFactorsTurn = [];
+            for( round of rounds ){
+                let roundCities = {};
+                for( match of round ){
+                    if( cities[match[ turn ]] in roundCities )
+                        roundCities[cities[match[ turn ]]] += 1;
+                    else
+                        roundCities[cities[match[ turn ]]] = 0;
+                }
+                matchFactorsTurn.push( roundCities );
+            }
+            matchFactors.push( matchFactorsTurn );
+        }
     }
 
     function shuffleRoundMatches( rounds ){
@@ -138,45 +166,57 @@
 
 	function playRounds( rounds ){
 		const result = [];
+        
+        for( turn=0; turn<=1; turn++ ){
+            tournamentTurn = []
+            for( const round of rounds ){
+                let playedRound = [];
 
-		for( const round of rounds ){
-            let playedRound = [];
-
-            for( const match of round ){
-                playedRound.push([
-                    match[0], // Home.
-                    match[1], // Visitor.
-                    parseInt(Math.random() * 3, 10) // Outcome.
-                ]);
+                for( const match of round ){
+                    if( turn === 0 ){
+                        playedRound.push([
+                            match[0], // Home.
+                            match[1], // Visitor.
+                            parseInt( Math.random() * 3, 10 ) // Outcome.
+                        ]);
+                    } else {
+                        playedRound.push([
+                            match[1], // Home.
+                            match[0], // Visitor.
+                            parseInt( Math.random() * 3, 10 ) // Outcome.
+                        ]);
+                    }
+                }
+                
+                tournamentTurn.push( playedRound );
             }
-            
-            result.push( playedRound );
-		}
+            result.push( tournamentTurn );
+        }
 
 		return result;
-	}
+    }
 
-	function formatOutput(rounds, turn) {
+    // Formats tournament output while simulating matches' outcomes.
+	function formatOutput( matches, turn ) {
         const result = [];
-        console.log( "len = " + rounds.length );
 
-        for( let i = 0; i < rounds.length; i++ ){
-            if( turn === 1 )
+        for( let i = 0; i < matches[turn].length; i++ ){
+            if( turn === 0 )
                 result.push(`Rodada ${i+1}:`);
-            else if( turn === 2 )
+            else if( turn === 1 )
                 result.push(`Rodada ${teams.length+i}:`);
             else
                 result.push("ERRO");
 
-            for (const match of rounds[i]) {
-                if( turn === 1 )
-                    result.push(`  ${match[0]} x ${match[1]} - ${cities[match[0]]}`);
-                else if( turn === 2 )
-                    result.push(`  ${match[1]} x ${match[0]} - ${cities[match[1]]}`);
-                else
-                    result.push("ERRO");
-
-                switch (match[2]) {
+            let j = 0;
+            for( const match of matches[turn][i] ){
+                let roundText = "";
+                if( matchFactors[turn][j][cities[match[0]]] === 1 ){
+                    roundText = " (RODADA DUPLA)"
+                }
+                result.push(`  ${match[0]} x ${match[1]} - ${cities[match[0]]}${roundText}`);
+                
+                switch( match[2] ){
                     case 0:
                         result.push(`     Resultado: Empate!`);
                         scores[match[0]] += 1;
@@ -193,6 +233,7 @@
                     default:
                         result.push("ERRO");
                 }
+                j += 1;
             }
 
             result.push("");
@@ -201,71 +242,99 @@
 		return result.join("\n");
 	}
 
-	function rank(scores) {
-		const result = [];
-		for (const team of teams) {
-			result.push(`${team}: ${scores[team]}`);
-		}
-		return result.join("\n");
-	}
+	function rank( scores ){
+        const unsorted = [];
+        for( let i=0; i<teams.length; i++ ){
+            unsorted.push( [teams[i], scores[teams[i]]] );
+        }
+
+        const sorted = [];
+        let position = 1;
+        let nextPosition = 0;
+        let largerScore;
+        let lastScore;
+        while( unsorted.length > 0 ){
+            lastScore = largerScore;
+            largerScore = unsorted[0][1];
+            largerIndex = 0;
+            for( let i=1; i<unsorted.length; i++ ){
+                if( unsorted[i][1] > largerScore ){
+                    largerScore = unsorted[i][1];
+                    largerIndex = i;
+                }
+            }
+
+            nextPosition += 1;
+            if( largerScore < lastScore )
+                position = nextPosition;
+
+            sorted.push( `#${position} ${unsorted[largerIndex][0]}: ${unsorted[largerIndex][1]}` );
+            unsorted.splice( largerIndex, 1 );
+        }
+
+		return sorted.join("\n");
+    }
 	
 	$("#import-button").click(function() {
 		const text = input.val();
-		if (text.length === 0) {
-            console.log("Input was empty!");
-            message.text("Lista vazia!");
-            message.attr('class', 'error');
+		if( text.length === 0 ){
+            console.log( "Input was empty!" );
+            message.text( "Lista vazia! Preencha o campo acima seguindo o formato do exemplo." );
+            message.attr( 'class', 'error' );
 			return;
 		}
 
-        console.log("Parsing input...");
-        parseResult = parseInput(text);
-        console.log(teams);
-        console.log(cities);
-        console.log(scores);
+        console.log( "Parsing input..." );
+        parseResult = parseInput( text );
+        console.log( teams );
+        console.log( cities );
+        console.log( scores );
 
-		if (parseResult === null) {
-            console.log("Invalid input!");
-            message.text("Entrada inválida!");
-            message.attr('class', 'error');
+		if( parseResult === null ){
+            console.log( "Invalid input!" );
+            message.text( "Entrada inválida!" );
+            message.attr( 'class', 'error' );
 			return;
         }
 		
-		console.log("Permuting teams to generate matches using circle method...");
+		console.log( "Permuting teams to generate matches using circle method..." );
         const rounds = permute_circleMethod( teams );
+
+        console.log( "Checking for double rounds for each turn" );
+        getMatchFactors( rounds );
         
-        console.log("Shuffling matches for each round...");
+        console.log( "Shuffling matches for each round..." );
         const shuffledRounds = shuffleRoundMatches( rounds );
 		
-		console.log("Simulating rounds...");
+		console.log( "Simulating rounds..." );
         const matches = playRounds( shuffledRounds );
-		
-		console.log("Formatting turn output...");
-        turn_.val(formatOutput( matches, 1 ));
+
+		console.log( "Formatting turn output..." );
+        turn_.val( formatOutput(matches, 0) );
         
-        console.log("Formatting return output...");
-		return_.val(formatOutput( matches, 2 ));
+        console.log( "Formatting return output..." );
+		return_.val( formatOutput(matches, 1) );
 
 		console.log("Ranking teams...");
 		ranking.val(rank( scores ));
 		
-        console.log("Done!");
-        message.text("Campeonato gerado!");
-        message.attr('class', 'success');
+        console.log( "Done!" );
+        message.text( "Campeonato gerado!" );
+        message.attr( 'class', 'success' );
     });
     
     /*  Permutes all elements in an array to form pairs. It was used to generate the matches
         before the more specific function permute_circleMethod has been implemented so that matches
         can already be generated in a correct round-robin way.
     */
-    function permute(array) {
+    function permute( array ){
 		const result = [];
 
-		for (let i = 0; i < array.length - 1; i++) {
+		for( let i = 0; i < array.length - 1; i++ ){
 			// Home team.
 			const first = array[i];
 
-			for (let j = i + 1; j < array.length; j++) {
+			for( let j = i + 1; j < array.length; j++ ){
 				// Visitor team.
 				const second = array[j];
 

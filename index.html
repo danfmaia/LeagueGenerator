@@ -8,16 +8,15 @@
 <body>
 	<h1 id="title">Gerador de Campeonato</h1>
 	<div>
-        <label id="input-message" for="input-textarrea">Preencha a lista de times e suas respectivas cidades
+        <label id="input-message" for="input-textarea">Preencha a lista de times e suas respectivas cidades
             usando o formato do exemplo:
         </label><br>
         <textarea
             id="input-textarea"
-            name="input-textarea"
             rows="15"
             cols="40"
             placeholder=
-"// Exemplo:
+"  Exemplo:
 Vasco;Rio de Janeiro
 Flamengo;Rio de Janeiro
 Corinthians;São Paulo
@@ -30,9 +29,20 @@ Palmeiras;São Paulo
         <p id="message"></p>
     </div>
     
-    <textarea id="turn-textarea" rows="30" cols="45" readonly></textarea>
-    <textarea id="return-textarea" rows="30" cols="45" readonly></textarea>
-	<textarea id="ranking-textarea" rows="15" cols="30" readonly></textarea>
+    <div id="fb">
+        <div class="turn">
+            <label for="turn-textarea">Turno:</label><br>
+            <textarea id="turn-textarea" rows="30" cols="55" readonly></textarea>
+        </div>
+        <div class="turn">
+            <label for="return-textarea">Returno:</label><br>
+            <textarea id="return-textarea" rows="30" cols="55" readonly></textarea>
+        </div>
+        <div id="ranking">
+            <label for="ranking-textarea">Classificação final:</label><br>
+            <textarea id="ranking-textarea" rows="30" cols="28" readonly></textarea>
+        </div>
+    </div>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 	<script src="script.js"></script>
