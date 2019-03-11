@@ -277,10 +277,17 @@
 	
 	$("#import-button").click(function() {
 		const text = input.val();
+<<<<<<< HEAD
 		if( text.length === 0 ){
             console.log( "Input was empty!" );
             message.text( "Lista vazia! Preencha o campo acima seguindo o formato do exemplo." );
             message.attr( 'class', 'error' );
+=======
+		if (text.length === 0) {
+            console.log("Input was empty!");
+            message.text("Lista vazia! Preencha o campo acima seguindo o formato do exemplo.");
+            message.attr('class', 'error');
+>>>>>>> 31f65d019607b84062d2a1cb4fecc250142fba2d
 			return;
 		}
 
