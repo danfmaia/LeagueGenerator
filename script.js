@@ -23,24 +23,26 @@
         
 		const rows = input_text.split( "\n" );
 
-        if( rows.length < 2 ){
+        if( rows.length < 2 )
             return null;
-        }
         
 		for( let i = 0; i < rows.length; i++ ){
+            console.log( "row = " + rows[i] );
+
+            if( rows[i] === "" )
+                continue;
+
 			const columns = rows[i].split( ";" );
 
-			if( columns.length !== 2 ){
+			if( columns.length !== 2 )
                 return null;
-            }
 
             const teamName = $.trim( columns[0] );
             teams.push( teamName );
 
 			// Can't have duplicate teams!
-			if( teamName in cities ){
+			if( teamName in cities )
                 return null;
-            }
 
             cities[teamName] = $.trim( columns[1] );
 			scores[teamName] = 0;
